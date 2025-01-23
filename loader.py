@@ -1,4 +1,6 @@
 import pandas as pd
+from PIL import Image
+
 
 class loader():
     def __init__(self, path, img_path):
