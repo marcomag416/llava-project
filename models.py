@@ -12,8 +12,8 @@ class qwen2vl():
         max_pixels = max_resolution*28*28 
         self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
 
-    def infer(self, img, prompt):
-        chat = [
+    def infer(self, imgs, prompts):
+        chats = [[
             {
                 "role":"user",
                 "content":[
@@ -26,13 +26,13 @@ class qwen2vl():
                     }
                 ]
             }
-        ]
+        ] for prompt in prompts]
 
         # Preprocess the inputs
-        text_prompt = self.processor.apply_chat_template(chat, add_generation_prompt=True)
+        text_prompts = [self.processor.apply_chat_template(chat, add_generation_prompt=True) for chat in chats]
         # Excepted output: '<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Describe this image.<|im_end|>\n<|im_start|>assistant\n'
 
-        inputs = self.processor(text=[text_prompt], images=[img], padding=True, return_tensors="pt")
+        inputs = self.processor(text=text_prompts, images=imgs, padding=True, return_tensors="pt")
         inputs = inputs.to('cuda')
 
         # Inference: Generation of the output
