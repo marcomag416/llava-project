@@ -2,14 +2,15 @@ from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 import torch
 
 class qwen2vl():
-    def __init__(self, flash_attention=False, min_resolution=256, max_resolution=512):
+    def __init__(self, flash_attention=False, min_resolution=256, max_resolution=512, max_new_tokens=8, dtype=torch.bfloat16, offload_buffers=True):
         if flash_attention:
-            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=True, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2")
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=offload_buffers, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2")
         else:
-            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=True, torch_dtype=torch.bfloat16)
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=offload_buffers, torch_dtype=dtype)
 
         self.model.eval()
         #self.model.to('cuda')
+        self.max_new_tokens = max_new_tokens
 
         min_pixels = min_resolution*28*28
         max_pixels = max_resolution*28*28 
@@ -39,7 +40,7 @@ class qwen2vl():
         inputs = inputs.to('cuda')
 
         # Inference: Generation of the output
-        output_ids = self.model.generate(**inputs, max_new_tokens=4)
+        output_ids = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens)
         generated_ids = [output_ids[len(input_ids):] for input_ids, output_ids in zip(inputs.input_ids, output_ids)]
         output_text = self.processor.batch_decode(generated_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
 
