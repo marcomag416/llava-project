@@ -1,4 +1,5 @@
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
+import torch.bfloat16
 
 class qwen2vl():
     def __init__(self, flash_attention=False):
