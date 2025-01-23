@@ -1,6 +1,7 @@
 from PIL import Image
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from torch import cuda
+import gc
 
 if cuda.is_available():
     device = "cuda"
@@ -21,3 +22,6 @@ def load_img(name, split="train"):
         raise ValueError("Invalid split name")
     return Image.open(path + name)
 
+def clean_cuda_cache():
+    cuda.empty_cache()
+    gc.collect()
