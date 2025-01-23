@@ -17,6 +17,8 @@ class loader():
     def get_len(self):
         return len(self.df)
 
-    def iter(self):
-        for i in range(self.get_len()):
-            yield self.load_img(i), self.load_prompt(i)
+    def iter(self, batch_size=1):
+        M = self.get_len() % batch_size
+        for i in range(0, self.get_len()-M, batch_size):
+            yield [self.load_img(i+j) for j in range(batch_size)], [self.load_prompt(i+j) for j in range(batch_size)]
+        yield [self.load_img(i+j) for j in range(M)], [self.load_prompt(i+j) for j in range(M)]
