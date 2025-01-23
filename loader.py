@@ -9,7 +9,7 @@ class loader():
         self.df = pd.read_csv(path)
 
     def load_img(self, i):
-        return Image.open(self.img_path + self.df.iloc[i]["image_name"])
+        return Image.open(self.img_path + self.df.iloc[i]["file_name"])
 
     def load_prompt(self, i):
         return self.df.iloc[i]
@@ -17,6 +17,6 @@ class loader():
     def get_len(self):
         return len(self.df)
 
-    def iter():
+    def iter(self):
         for i in range(self.get_len()):
             yield self.load_img(i), self.load_prompt(i)
