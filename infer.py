@@ -6,7 +6,7 @@ from tqdm.autonotebook import tqdm
 
 
 def infer(model, path, img_path, file_out, batch_size=1):
-    val_set = loader.loader(val_path + "validation_without_answers.csv", val_img_path)
+    val_set = loader.loader(path, val_img_path)
 
     submission = []
     invalid_results = 0
