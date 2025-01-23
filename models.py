@@ -1,8 +1,11 @@
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
 class qwen2vl():
-    def __init__(self):
-        self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=True)
+    def __init__(self, flash_attention=False):
+        if flash_attention:
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=True, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2")
+        else:
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=True)
 
         min_pixels = 256*28*28
         max_pixels = 512*28*28 
