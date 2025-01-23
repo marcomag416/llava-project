@@ -2,14 +2,14 @@ from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 import torch
 
 class qwen2vl():
-    def __init__(self, flash_attention=False):
+    def __init__(self, flash_attention=False, min_resolution=256, max_resolution=512):
         if flash_attention:
             self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=True, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2")
         else:
             self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=True)
 
-        min_pixels = 256*28*28
-        max_pixels = 512*28*28 
+        min_pixels = min_resolution*28*28
+        max_pixels = max_resolution*28*28 
         self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
 
     def infer(self, img, prompt):
