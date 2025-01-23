@@ -39,7 +39,7 @@ class qwen2vl():
         inputs = inputs.to('cuda')
 
         # Inference: Generation of the output
-        output_ids = self.model.generate(**inputs, max_new_tokens=8)
+        output_ids = self.model.generate(**inputs, max_new_tokens=4)
         generated_ids = [output_ids[len(input_ids):] for input_ids, output_ids in zip(inputs.input_ids, output_ids)]
         output_text = self.processor.batch_decode(generated_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True)
 
