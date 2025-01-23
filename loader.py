@@ -6,7 +6,7 @@ class loader():
     def __init__(self, path, img_path):
         self.path = path
         self.img_path = img_path
-        delf.df = train_set = pd.read_csv(path + "train_with_answers.csv")
+        self.df = pd.read_csv(path)
 
     def load_img(self, i):
         return Image.open(self.img_path + self.df.iloc[i]["image_name"])
