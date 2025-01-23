@@ -14,12 +14,12 @@ def infer(model, path, img_path, file_out, batch_size=1):
     for imgs, xs in tqdm(val_set.iter(batch_size=batch_size), total=val_set.get_len()//batch_size +1):
         prompt = [prompts.generate_prompt(x, template=0) for x in xs]
         result = model.infer(imgs, prompt)
-        for r in result:
+        for idx, r in enumerate(result):
             answer, parsed_right = prompts.parse_response(r, template=0)
             if not parsed_right:
                 invalid_results += 1
                 print(f"Invalid result. Prompt: {prompt}. Result: {result}")
-            submission.append({"file_name": x["file_name"], "answer": answer})
+            submission.append({"file_name": xs[idx]["file_name"], "answer": answer})
         utils.clean_cuda_cache()
 
     df = pd.DataFrame(submission)
