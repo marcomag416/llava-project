@@ -14,10 +14,10 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
     file_idx = 1
 
     for imgs, xs in tqdm(val_set.iter(batch_size=batch_size, start_from=start_from), total=ceil(val_set.get_len()//batch_size)):
-        prompt = [promptgen.generate_prompt(x, template=0) for x in xs]
+        prompt = [promptgen.generate_prompt(x) for x in xs]
         result = model.infer(imgs, prompt)
         for idx, r in enumerate(result):
-            answer, parsed_right = promptgen.parse_response(r, template=0)
+            answer, parsed_right = promptgen.parse_response(r)
             if not parsed_right:
                 invalid_results += 1
                 print(f"Invalid result. Prompt: {prompt}. Result: {result}")
