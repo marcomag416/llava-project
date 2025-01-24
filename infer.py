@@ -38,7 +38,7 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
         file_idx += 1
     print(f"Invalid results: {invalid_results}")
 
-    return df, file_idx-1
+    return file_idx-1
 
 def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1, auto_resume=True):
     permutations = [
@@ -92,7 +92,7 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1, au
         promptgen = Promptgenerator(template=0, permutation=permutations[iternum])
 
         print("Starting inference. File name root:", root_name+str(iternum))
-        df, num_files = infer(model, promptgen, csv_path, img_path, root_name+str(iternum), batch_size=batch_size, check_point_every=50, filter=filter, start_from=initial_infer, first_file_idx=initial_checkpoint)                                     
+        num_files = infer(model, promptgen, csv_path, img_path, root_name+str(iternum), batch_size=batch_size, check_point_every=50, filter=filter, start_from=initial_infer, first_file_idx=initial_checkpoint)                                     
         
         # Merge all the files for this iteration
         results = pd.DataFrame({"file_name":[], "answer":[]})
