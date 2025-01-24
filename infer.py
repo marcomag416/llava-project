@@ -35,9 +35,10 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
     if len(submission) > 0:
         df = pd.DataFrame(submission)
         df.to_csv(f"{file_out}_{file_idx}.csv", index=False)
+        file_idx += 1
     print(f"Invalid results: {invalid_results}")
 
-    return df, file_idx
+    return df, file_idx-1
 
 def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1):
     permutations = [
