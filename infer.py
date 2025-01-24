@@ -40,7 +40,7 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
 
     return df, file_idx-1
 
-def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1):
+def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1, auto_resume=True):
     permutations = [
         {1:1, 2:2, 3:3, 4:4},
         {1:3, 2:1, 3:4, 4:2},
@@ -48,32 +48,60 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1):
         {1:4, 2:2, 3:1, 4:3},
         {1:3, 2:4, 3:1, 4:2}
     ]
-    for iternum in range(5):
+    completed_iterations = 0
+
+    if auto_resume:
+        # Determine the number of completed iterations by checking existing files
+        while os.path.exists(f"{root_name}{str(completed_iterations)}.csv"):
+            completed_iterations += 1
+
+        if completed_iterations > 0:
+            print(f"Resuming from iteration {completed_iterations}")
+            print("Set 'auto_resume=False' to restart from the beginning")
+
+            
+    for iternum in range(completed_iterations, 5):
         print("Starting iteration", iternum)
         filter = None
+        # Majority voting: Only use majority voting if at least three iterations has been completed
         if(iternum >= 3):
             files = []
             for file in range(iternum):
                 files.append(f"{root_name}{str(file)}.csv")
             res, ties = implement_majority_voting(files)
-            print("First round of majority voting done")
+            print(f"Round {iternum - 2} of majority voting done")
             if len(ties) == 0:
                 print("No ties found. Terminating")
                 break
-            print(f"{len(ties)} ties found. Starting second round of majority voting")
+            print(f"{len(ties)} ties found. Ties will undergo an additional inference")
             filter = ties["file_name"]
 
+        initial_checkpoint = 1
+        initial_infer = 0
+        # Determine the number of infers already processed in this iteration
+        while os.path.exists(f"{root_name}{str(completed_iterations)}_{str(initial_checkpoint)}.csv"):
+            df = pd.read_csv(f"{root_name}{str(completed_iterations)}_{str(initial_checkpoint)}.csv")
+            initial_infer += len(df)
+            initial_checkpoint += 1
+
+        if(initial_checkpoint > 1):
+            print(f"Resuming from checkpoint {initial_checkpoint}. {initial_file} files already processed in this iteration")
+            print("Set 'auto_resume=False' to restart from the beginning")
+
+        #define new generator using a new permutation
         promptgen = Promptgenerator(template=0, permutation=permutations[iternum])
 
         print("Starting inference. File name root:", root_name+str(iternum))
-        df, num_files = infer(model, promptgen, csv_path, img_path, root_name+str(iternum), batch_size=batch_size, check_point_every=50, filter=filter) 
+        df, num_files = infer(model, promptgen, csv_path, img_path, root_name+str(iternum), batch_size=batch_size, check_point_every=50, filter=filter, start_from=initial_infer, first_file_idx=initial_checkpoint)                                     
+        
+        # Merge all the files for this iteration
         results = pd.DataFrame({"file_name":[], "answer":[]})
-
         for t in range(1, num_files + 1):
             file = f"{root_name+str(iternum)}_{str(t)}.csv"
             tmp = pd.read_csv(file)
             results = pd.concat([results, tmp])
 
+        # Include already decided questions only if a round of majority voting has been performed
         if filter is not None:
             results = pd.concat([results, res])
 
