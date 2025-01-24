@@ -78,15 +78,16 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1, au
 
         initial_checkpoint = 1
         initial_infer = 0
-        # Determine the number of infers already processed in this iteration
-        while os.path.exists(f"{root_name}{str(completed_iterations)}_{str(initial_checkpoint)}.csv"):
-            df = pd.read_csv(f"{root_name}{str(completed_iterations)}_{str(initial_checkpoint)}.csv")
-            initial_infer += len(df)
-            initial_checkpoint += 1
+        if auto_resume:
+            # Determine the number of infers already processed in this iteration
+            while os.path.exists(f"{root_name}{str(completed_iterations)}_{str(initial_checkpoint)}.csv"):
+                df = pd.read_csv(f"{root_name}{str(completed_iterations)}_{str(initial_checkpoint)}.csv")
+                initial_infer += len(df)
+                initial_checkpoint += 1
 
-        if(initial_checkpoint > 1):
-            print(f"Resuming from checkpoint {initial_checkpoint}. {initial_infer} infers already done in this iteration")
-            print("If you want to restart from the beginning set 'auto_resume=False' or change 'root_name'")
+            if(initial_checkpoint > 1):
+                print(f"Resuming from checkpoint {initial_checkpoint}. {initial_infer} infers already done in this iteration")
+                print("If you want to restart from the beginning set 'auto_resume=False' or change 'root_name'")
 
         #define new generator using a new permutation
         promptgen = Promptgenerator(template=0, permutation=permutations[iternum])
