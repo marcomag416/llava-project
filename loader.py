@@ -7,8 +7,8 @@ class loader():
         self.path = path
         self.img_path = img_path
         self.df = pd.read_csv(path)
-        if filter is not None:
-            self.df = self.df[self.df["file_name"].isin(filter)]
+        if ignore_files is not None:
+            self.df = self.df[self.df["file_name"].isin(ignore_files)]
 
     def load_img(self, i):
         return Image.open(self.img_path + self.df.iloc[i]["file_name"])
