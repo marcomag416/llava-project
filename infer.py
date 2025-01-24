@@ -50,7 +50,7 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1):
     for iternum in range(5):
         print("Starting iteration", iternum)
         filter = None
-        if(perm >= 3):
+        if(iternum >= 3):
             files = []
             for file in range(iternum):
                 files.append(f"{root_name}{str(file)}.csv")
