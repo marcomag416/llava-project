@@ -57,7 +57,7 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1, au
 
         if completed_iterations > 0:
             print(f"Resuming from iteration {completed_iterations}")
-            print("Set 'auto_resume=False' to restart from the beginning")
+            print("If you want to restart from the beginning set 'auto_resume=False' or change root name")
 
             
     for iternum in range(completed_iterations, 5):
@@ -86,7 +86,7 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1, au
 
         if(initial_checkpoint > 1):
             print(f"Resuming from checkpoint {initial_checkpoint}. {initial_file} files already processed in this iteration")
-            print("Set 'auto_resume=False' to restart from the beginning")
+            print("If you want to restart from the beginning set 'auto_resume=False' or change root name")
 
         #define new generator using a new permutation
         promptgen = Promptgenerator(template=0, permutation=permutations[iternum])
