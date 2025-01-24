@@ -3,6 +3,7 @@ import utils
 import pandas as pd
 from tqdm.autonotebook import tqdm
 import os
+from math import ceil
 
 
 def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_every=-1):
@@ -12,7 +13,7 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
     invalid_results = 0
     file_idx = 1
 
-    for imgs, xs in tqdm(val_set.iter(batch_size=batch_size), total=val_set.get_len()//batch_size +1):
+    for imgs, xs in tqdm(val_set.iter(batch_size=batch_size), total=ceil(val_set.get_len()//batch_size)):
         prompt = [promptgen.generate_prompt(x, template=0) for x in xs]
         result = model.infer(imgs, prompt)
         for idx, r in enumerate(result):
@@ -28,8 +29,9 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
             file_idx += 1
             submission = []
 
-    df = pd.DataFrame(submission)
-    df.to_csv(f"{file_out}_{file_idx}.csv", index=False)
+    if len(submission) > 0:
+        df = pd.DataFrame(submission)
+        df.to_csv(f"{file_out}_{file_idx}.csv", index=False)
     print(f"Invalid results: {invalid_results}")
 
     return df
