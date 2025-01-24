@@ -108,6 +108,7 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1, au
         results.to_csv(f"{root_name+str(iternum)}.csv", index=False)
         print("Results for this round saved to: ", f"{root_name+str(iternum)}.csv")
     
+    print("Final output saved to: ", f"{root_name+str(iternum)}.csv")
     return results, f"{root_name+str(iternum)}.csv"
 
 
