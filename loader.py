@@ -3,7 +3,7 @@ from PIL import Image
 
 
 class loader():
-    def __init__(self, path, img_path, filter=None):
+    def __init__(self, path, img_path, ignore_files=None):
         self.path = path
         self.img_path = img_path
         self.df = pd.read_csv(path)

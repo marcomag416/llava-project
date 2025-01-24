@@ -6,8 +6,8 @@ import os
 from math import ceil
 
 
-def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_every=-1, start_from=0, first_file_idx=1, filter=None):
-    val_set = loader.loader(path, img_path, filter=filter)
+def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_every=-1, start_from=0, first_file_idx=1, ignore_files=None):
+    val_set = loader.loader(path, img_path, ignore_files=ignore_files)
 
     submission = []
     invalid_results = 0
