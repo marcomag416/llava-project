@@ -48,14 +48,18 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1):
         {1:3, 2:4, 3:1, 4:2}
     ]
     for iternum in range(5):
+        print("Starting iteration", iternum)
         filter = None
         if(perm >= 3):
             files = []
             for file in range(iternum):
                 files.append(f"{root_name}{str(file)}.csv")
             res, ties = implement_majority_voting(files)
+            print("First round of majority voting done")
             if len(ties) == 0:
+                print("No ties found. Terminating")
                 break
+            print(f"{len(ties)} ties found. Starting second round of majority voting")
             filter = ties["file_name"]
 
         promptgen = Promptgenerator(template=0, permutation=permutations[iternum])
