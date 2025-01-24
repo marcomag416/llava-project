@@ -31,7 +31,7 @@ def implement_majority_voting(file_names):
     merged = pd.read_csv(file_names[0])
     for idx, perm in enumerate(file_names[1:]):
         df = pd.read_csv(perm)
-        merged = pd.merge(merged, df, on="file_name")
+        merged = pd.merge(merged, df, on="file_name", suffixes=("", idx+1))
     
     # Function to check for ties
     def check_ties(row):
