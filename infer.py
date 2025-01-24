@@ -6,12 +6,12 @@ import os
 from math import ceil
 
 
-def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_every=-1, start_from=0):
+def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_every=-1, start_from=0, first_file_idx=1):
     val_set = loader.loader(path, img_path)
 
     submission = []
     invalid_results = 0
-    file_idx = 1
+    file_idx = first_file_idx
 
     for imgs, xs in tqdm(val_set.iter(batch_size=batch_size, start_from=start_from), total=ceil(val_set.get_len()//batch_size)):
         prompt = [promptgen.generate_prompt(x) for x in xs]
