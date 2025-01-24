@@ -70,9 +70,11 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1, au
                 files.append(f"{root_name}{str(file)}.csv")
             res, ties = implement_majority_voting(files)
             print(f"Round {iternum - 2} of majority voting done")
+            #if no ties are found, terminate the process
             if len(ties) == 0:
                 print("No ties found. Terminating")
                 break
+            #if ties are found, do an additional inference on the tied questions
             print(f"{len(ties)} ties found. Ties will undergo an additional inference")
             filter = ties["file_name"]
 
@@ -102,7 +104,7 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1, au
             tmp = pd.read_csv(file)
             results = pd.concat([results, tmp])
 
-        # Include already decided questions only if a round of majority voting has been performed
+        # Include already decided questions only if a round of majority voting has been performed (s.t. res is defined)
         if filter is not None:
             results = pd.concat([results, res])
 
