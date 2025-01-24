@@ -5,6 +5,7 @@ from tqdm.autonotebook import tqdm
 import os
 from math import ceil
 from prompts import Promptgenerator
+from utils import implement_majority_voting
 
 
 
@@ -77,7 +78,6 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1):
 
 if __name__ == "__main__":
     from models import qwen2vl
-    from prompts import Promptgenerator
     import argparse
 
     parser = argparse.ArgumentParser(description="Inference script")
