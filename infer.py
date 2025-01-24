@@ -35,3 +35,13 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
     print(f"Invalid results: {invalid_results}")
 
     return df
+
+
+if __name__ == "__main__":
+    from models import qwen2vl
+    from prompts import Promptgenerator
+
+    model = qwen2vl()
+    promptgen = Promptgenerator(template=0, permutation={1:1, 2:2, 3:3, 4:4})
+
+    infer(model, promptgen, "./dataset/validatio/validation_without_answers.csv", "./dataset/validation/images/", "./qwen2vl_t0", batch_size=1, check_point_every=50)
