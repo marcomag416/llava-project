@@ -3,12 +3,12 @@ from PIL import Image
 
 
 class loader():
-    def __init__(self, path, img_path, ignore_files=None):
+    def __init__(self, path, img_path, filter=None):
         self.path = path
         self.img_path = img_path
         self.df = pd.read_csv(path)
-        if ignore_files is not None:
-            self.df = self.df[self.df["file_name"].isin(ignore_files)]
+        if filter is not None:
+            self.df = self.df[self.df["file_name"].isin(filter)]
 
     def load_img(self, i):
         return Image.open(self.img_path + self.df.iloc[i]["file_name"])

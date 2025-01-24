@@ -4,10 +4,12 @@ import pandas as pd
 from tqdm.autonotebook import tqdm
 import os
 from math import ceil
+from prompts import Promptgenerator
 
 
-def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_every=-1, start_from=0, first_file_idx=1, ignore_files=None):
-    val_set = loader.loader(path, img_path, ignore_files=ignore_files)
+
+def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_every=-1, start_from=0, first_file_idx=1, filter=None):
+    val_set = loader.loader(path, img_path, filter=filter)
 
     submission = []
     invalid_results = 0
@@ -34,7 +36,43 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
         df.to_csv(f"{file_out}_{file_idx}.csv", index=False)
     print(f"Invalid results: {invalid_results}")
 
-    return df
+    return df, file_idx
+
+def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1):
+    permutations = [
+        {1:1, 2:2, 3:3, 4:4},
+        {1:3, 2:1, 3:4, 4:2},
+        {1:2, 2:3, 3:4, 4:1},
+        {1:4, 2:2, 3:1, 4:3},
+        {1:3, 2:4, 3:1, 4:2}
+    ]
+    for iternum in range(5):
+        filter = None
+        if(perm >= 3):
+            files = []
+            for file in range(iternum):
+                files.append(f"{root_name}{str(file)}.csv")
+            res, ties = implement_majority_voting(files)
+            if len(ties) == 0:
+                break
+            filter = ties["file_name"]
+
+        promptgen = Promptgenerator(template=0, permutation=permutations[iternum])
+
+        df, num_files = infer(model, promptgen, csv_path, img_path, root_name+str(iternum), batch_size=batch_size, check_point_every=50, filter=filter) 
+        results = pd.DataFrame({"file_name":[], "answer":[]})
+
+        for t in range(1, num_files + 1):
+            file = f"{root_name+str(iternum)}_{str(t)}.csv"
+            tmp = pd.read_csv(file)
+            results = pd.concat([results, tmp])
+
+        if filter is not None:
+            results = pd.concat([results, res])
+
+        results.to_csv(f"{root_name+str(iternum)}.csv", index=False)
+    
+    return results, f"{root_name+str(iternum)}.csv"
 
 
 if __name__ == "__main__":
