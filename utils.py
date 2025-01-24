@@ -38,7 +38,7 @@ def implement_majority_voting(file_names):
         modes = row.mode()
         return len(modes) > 1
 
-    maj_voting = merged[1:].mode(axis=1)
+    maj_voting = merged.mode(axis=1)
     maj_voting["file_name"] = merged["file_name"]
     ties = maj_voting[maj_voting.drop(columns="file_name").apply(check_ties, axis=1)]
     ties.drop(columns=0, inplace=True)
