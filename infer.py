@@ -63,19 +63,18 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1, au
     for iternum in range(completed_iterations, 5):
         print("Starting iteration", iternum)
         filter = None
-        # Majority voting: Only use majority voting if at least three iterations has been completed
+        # Majority voting: Only use majority voting if at least three inferences have been done
         if(iternum >= 3):
             files = []
             for file in range(iternum):
                 files.append(f"{root_name}{str(file)}.csv")
             res, ties = implement_majority_voting(files)
-            print(f"Round {iternum - 2} of majority voting done")
+            print(f"Round {iternum - 2} of majority voting completed. {len(res)} questions decided. {len(ties)} ties found")
             #if no ties are found, terminate the process
             if len(ties) == 0:
                 print("No ties found. Terminating")
                 break
             #if ties are found, do an additional inference on the tied questions
-            print(f"{len(ties)} ties found. Ties will undergo an additional inference")
             filter = ties["file_name"]
 
         initial_checkpoint = 1
