@@ -16,7 +16,7 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
     invalid_results = 0
     file_idx = first_file_idx
 
-    for imgs, xs in tqdm(val_set.iter(batch_size=batch_size, start_from=start_from), total=ceil((val_set.get_len()-start_from)/batch_size)):
+    for imgs, xs in tqdm(val_set.iter(batch_size=batch_size, start_from=start_from), total=ceil(val_set.get_len()/batch_size), initial=start_from):
         prompt = [promptgen.generate_prompt(x) for x in xs]
         result = model.infer(imgs, prompt)
         for idx, r in enumerate(result):
