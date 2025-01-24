@@ -1,12 +1,11 @@
 import loader
-import prompts
 import utils
 import pandas as pd
 from tqdm.autonotebook import tqdm
 import os
 
 
-def infer(model, path, img_path, file_out, batch_size=1, check_point_every=-1):
+def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_every=-1):
     val_set = loader.loader(path, img_path)
 
     submission = []
@@ -14,10 +13,10 @@ def infer(model, path, img_path, file_out, batch_size=1, check_point_every=-1):
     file_idx = 1
 
     for imgs, xs in tqdm(val_set.iter(batch_size=batch_size), total=val_set.get_len()//batch_size +1):
-        prompt = [prompts.generate_prompt(x, template=0) for x in xs]
+        prompt = [promptgen.generate_prompt(x, template=0) for x in xs]
         result = model.infer(imgs, prompt)
         for idx, r in enumerate(result):
-            answer, parsed_right = prompts.parse_response(r, template=0)
+            answer, parsed_right = promptgen.parse_response(r, template=0)
             if not parsed_right:
                 invalid_results += 1
                 print(f"Invalid result. Prompt: {prompt}. Result: {result}")
