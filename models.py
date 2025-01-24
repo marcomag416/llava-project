@@ -2,11 +2,14 @@ from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 import torch
 
 class qwen2vl():
-    def __init__(self, flash_attention=False, min_resolution=256, max_resolution=512, max_new_tokens=8, dtype=torch.bfloat16, offload_buffers=True):
-        if flash_attention:
-            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=offload_buffers, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2")
+    def __init__(self, quantized=False, flash_attention=False, min_resolution=256, max_resolution=512, max_new_tokens=8, dtype=torch.bfloat16, offload_buffers=True):        
+        if quantized:
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-72B-Instruct-GPTQ-Int8", torch_dtype="auto", device_map="auto")
         else:
-            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=offload_buffers, torch_dtype=dtype)
+            if flash_attention:
+                self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=offload_buffers, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2")
+            else:
+                self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=offload_buffers, torch_dtype=dtype)
 
         self.model.eval()
         #self.model.to('cuda')
@@ -14,7 +17,10 @@ class qwen2vl():
 
         min_pixels = min_resolution*28*28
         max_pixels = max_resolution*28*28 
-        self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
+        if quantized:
+            self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-72B-Instruct-GPTQ-Int8", min_pixels=min_pixels, max_pixels=max_pixels)
+        else:
+            self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
 
     def infer(self, imgs, prompts):
         chats = [[
