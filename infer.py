@@ -23,7 +23,7 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
                 print(f"Invalid result. Prompt: {prompt}. Result: {result}")
             submission.append({"file_name": xs[idx]["file_name"], "answer": answer})
         utils.clean_cuda_cache()
-        if check_point_every > 0 and len(submission) % check_point_every == 0:
+        if check_point_every > 0 and len(submission) % (check_point_every*batch_size) == 0:
             df = pd.DataFrame(submission)
             df.to_csv(f"{file_out}_{file_idx}.csv", index=False)
             file_idx += 1
@@ -40,8 +40,18 @@ def infer(model, promptgen, path, img_path, file_out, batch_size=1, check_point_
 if __name__ == "__main__":
     from models import qwen2vl
     from prompts import Promptgenerator
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Inference script")
+    parser.add_argument("--csv_path", type=str, required=True, help="Path to the CSV file")
+    parser.add_argument("--images_path", type=str, required=True, help="Path to the images directory")
+    parser.add_argument("--output_path", type=str, required=True, help="Path to the output directory")
+    parser.add_argument("--template", type=int, default=0, help="Template number")
+    parser.add_argument("--batch_size", type=int, default=1, help="Batch size for inference")
+    parser.add_argument("--check_point_every", type=int, default=-1, help="Checkpoint every N batches")
+    args = parser.parse_args()
 
     model = qwen2vl()
-    promptgen = Promptgenerator(template=0, permutation={1:1, 2:2, 3:3, 4:4})
+    promptgen = Promptgenerator(template=args.template, permutation={1:1, 2:2, 3:3, 4:4})
 
-    infer(model, promptgen, "./dataset/validatio/validation_without_answers.csv", "./dataset/validation/images/", "./qwen2vl_t0", batch_size=1, check_point_every=50)
+    infer(model, promptgen, args.csv_path, args.images_path, args.output_path, batch_size=args.batch_size, check_point_every=args.check_point_every)
