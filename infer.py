@@ -64,6 +64,7 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1):
 
         promptgen = Promptgenerator(template=0, permutation=permutations[iternum])
 
+        print("Starting inference. File name root:", root_name+str(iternum))
         df, num_files = infer(model, promptgen, csv_path, img_path, root_name+str(iternum), batch_size=batch_size, check_point_every=50, filter=filter) 
         results = pd.DataFrame({"file_name":[], "answer":[]})
 
@@ -76,6 +77,7 @@ def infer_majority_voting(model, csv_path, img_path, root_name, batch_size=1):
             results = pd.concat([results, res])
 
         results.to_csv(f"{root_name+str(iternum)}.csv", index=False)
+        print("Results for this round saved to: ", f"{root_name+str(iternum)}.csv")
     
     return results, f"{root_name+str(iternum)}.csv"
 
