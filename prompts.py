@@ -31,8 +31,8 @@ def parse_response(response, template=0, permutation={1:1, 2:2, 3:3, 4:4}):
     return out, True
 
 
-class promptgenerator():
-    def __init__(self, template, permutation={1:1, 2:2, 3:3, 4:4}):
+class Promptgenerator():
+    def __init__(self, template=0, permutation={1:1, 2:2, 3:3, 4:4}):
         self.template = template
         self.permutation = permutation
 
