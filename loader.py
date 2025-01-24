@@ -21,4 +21,5 @@ class loader():
         M = (self.get_len() - start_from) % batch_size
         for i in range(start_from, self.get_len()-M, batch_size):
             yield [self.load_img(i+j) for j in range(batch_size)], [self.load_prompt(i+j) for j in range(batch_size)]
-        yield [self.load_img(i+j) for j in range(M)], [self.load_prompt(i+j) for j in range(M)]
+        if M > 0:
+            yield [self.load_img(i+j) for j in range(M)], [self.load_prompt(i+j) for j in range(M)]
