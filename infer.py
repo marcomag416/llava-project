@@ -121,8 +121,9 @@ if __name__ == "__main__":
     parser.add_argument("--images_path", type=str, required=True, help="Path to the images directory")
     parser.add_argument("--working_path", type=str, required=True, help="Path to the working directory")
     parser.add_argument("--batch_size", type=int, default=1, help="Batch size for inference")
+    parser.add_argument("--auto_resume", action='store_true', help="Resume from the last completed iteration")
     args = parser.parse_args()
 
     model = qwen2vl()
 
-    infer_majority_voting(model, args.csv_path, args.images_path, args.working_path, batch_size=args.batch_size)
+    infer_majority_voting(model, args.csv_path, args.images_path, args.working_path, batch_size=args.batch_size, auto_resume=args.auto_resume)
