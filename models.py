@@ -14,10 +14,7 @@ class qwen2vl():
 
         min_pixels = min_resolution*28*28
         max_pixels = max_resolution*28*28 
-        if quantized:
-            self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-72B-Instruct-GPTQ-Int8", min_pixels=min_pixels, max_pixels=max_pixels)
-        else:
-            self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
+        self.processor = AutoProcessor.from_pretrained(variant, min_pixels=min_pixels, max_pixels=max_pixels)
 
     def infer(self, imgs, prompts):
         chats = [[
