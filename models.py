@@ -2,9 +2,9 @@ from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 import torch
 
 class qwen2vl():
-    def __init__(self, quantized=False, flash_attention=False, min_resolution=256, max_resolution=512, max_new_tokens=8, dtype=torch.bfloat16, offload_buffers=True):        
-        if quantized:
-            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-72B-Instruct-GPTQ-Int8", torch_dtype="auto", device_map="auto", offload_buffers=offload_buffers)
+    def __init__(self, variant=None, flash_attention=False, min_resolution=256, max_resolution=512, max_new_tokens=8, dtype=torch.bfloat16, offload_buffers=True):        
+        if variant is not None:
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained(variant, torch_dtype=dtype, device_map="auto", offload_buffers=offload_buffers)
         else:
             if flash_attention:
                 self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=offload_buffers, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2")
