@@ -2,11 +2,11 @@ from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 import torch
 
 class qwen2vl():
-    def __init__(self, variant="Qwen/Qwen2-VL-7B-Instruct", flash_attention=False, min_resolution=256, max_resolution=512, max_new_tokens=8, dtype=torch.bfloat16, offload_buffers=True):        
+    def __init__(self, variant="Qwen/Qwen2-VL-7B-Instruct", flash_attention=False, min_resolution=256, max_resolution=512, max_new_tokens=8, dtype=torch.bfloat16, offload_buffers=True, device="auto"):        
         if flash_attention:
             self.model = Qwen2VLForConditionalGeneration.from_pretrained(variant, device_map="auto", offload_buffers=offload_buffers, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2")
         else:
-            self.model = Qwen2VLForConditionalGeneration.from_pretrained(variant, device_map="auto", offload_buffers=offload_buffers, torch_dtype=dtype)
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained(variant, device_map=device, offload_buffers=offload_buffers, torch_dtype=dtype)
 
         self.model.eval()
         #self.model.to('cuda')
