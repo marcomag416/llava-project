@@ -4,7 +4,7 @@ import torch
 class qwen2vl():
     def __init__(self, quantized=False, flash_attention=False, min_resolution=256, max_resolution=512, max_new_tokens=8, dtype=torch.bfloat16, offload_buffers=True):        
         if quantized:
-            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-72B-Instruct-GPTQ-Int8", torch_dtype="auto", device_map="auto")
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-72B-Instruct-GPTQ-Int8", torch_dtype="auto", device_map="auto", offload_buffers=offload_buffers)
         else:
             if flash_attention:
                 self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", device_map="auto", offload_buffers=offload_buffers, torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2")
